@@ -1,0 +1,8 @@
+{
+  "arch": {
+    "packageName": "douyin-devtools-bin",
+    "provides": "douyin-devtools",
+    "githubRepository": "Geequlim/-douyin-game-devtools-linux",
+    "aurRepository": "ssh://aur@aur.archlinux.org/douyin-devtools-bin.git"
+  }
+}

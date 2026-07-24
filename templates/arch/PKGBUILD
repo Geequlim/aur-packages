@@ -1,0 +1,44 @@
+pkgname={{PACKAGE_NAME}}
+pkgver={{VERSION}}
+pkgrel=1
+pkgdesc='Douyin mini game and mini app developer tools repackaged for Linux'
+arch=('x86_64')
+url='https://github.com/{{GITHUB_REPOSITORY}}'
+license=('custom')
+depends=(
+  'alsa-lib'
+  'at-spi2-core'
+  'fuse2'
+  'gtk3'
+  'libcups'
+  'libxss'
+  'nss'
+)
+provides=('{{PROVIDES}}')
+conflicts=('{{PROVIDES}}')
+options=('!debug' '!strip')
+
+_appimage='{{APPIMAGE_NAME}}'
+source=(
+  '{{APPIMAGE_SOURCE}}'
+  'douyin-devtools.desktop'
+  'douyin-devtools.png'
+)
+noextract=("$_appimage")
+sha256sums=(
+  '{{APPIMAGE_SHA256}}'
+  '{{DESKTOP_SHA256}}'
+  '{{ICON_SHA256}}'
+)
+
+package() {
+  install -Dm755 "$_appimage" \
+    "$pkgdir/opt/douyin-devtools/DouyinDevTools.AppImage"
+  install -Dm644 'douyin-devtools.desktop' \
+    "$pkgdir/usr/share/applications/douyin-devtools.desktop"
+  install -Dm644 'douyin-devtools.png' \
+    "$pkgdir/usr/share/icons/hicolor/512x512/apps/douyin-devtools.png"
+  install -d "$pkgdir/usr/bin"
+  ln -s '/opt/douyin-devtools/DouyinDevTools.AppImage' \
+    "$pkgdir/usr/bin/douyin-devtools"
+}

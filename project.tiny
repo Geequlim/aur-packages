@@ -1,0 +1,10 @@
+publish:
+  actions:
+    - name: arch
+      description: 生成 Arch Linux x86_64 pacman 安装包
+      command: node scripts/package-arch.mts build
+      actions:
+        - name: aur
+          description: 发布 AppImage 到 GitHub Release 并更新 AUR
+          command: node scripts/package-arch.mts publish
+
