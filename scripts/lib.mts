@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { createReadStream } from "node:fs";
+import { createReadStream, readFileSync } from "node:fs";
 import {
   access,
   copyFile,
@@ -22,6 +22,20 @@ export interface VersionConfig {
   electronVersion: string;
   electronMirror?: string;
   nativeDependencies: Record<string, string>;
+}
+
+export interface UpstreamRelease {
+  version: string;
+  releaseDate: string;
+  buildId: string;
+  dmgUrl: string;
+}
+
+export interface ReleaseState {
+  sourcePage: string;
+  platform: "darwin-arm64";
+  supportedVersion: string;
+  latest: UpstreamRelease;
 }
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -65,7 +79,15 @@ export function parseArg(name: string): string | undefined {
 }
 
 export function selectedVersion(): string {
-  return parseArg("--version") ?? process.env.DOUYIN_VERSION ?? "4.5.3";
+  const override = parseArg("--version") ?? process.env.DOUYIN_VERSION;
+  if (override) {
+    return override;
+  }
+  const state = JSON.parse(readFileSync(
+    resolve(projectRoot, "configs", "releases.json"),
+    "utf8",
+  )) as ReleaseState;
+  return state.supportedVersion;
 }
 
 export async function loadConfig(version = selectedVersion()): Promise<VersionConfig> {

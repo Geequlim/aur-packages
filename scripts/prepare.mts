@@ -98,7 +98,7 @@ async function ensureNativeDependencies(
     cwd: root,
     env: {
       ...withoutProxyEnv(),
-      npm_config_nodedir: "/usr",
+      npm_config_nodedir: resolve(dirname(process.execPath), ".."),
       npm_config_build_from_source: "true",
       npm_config_cache: resolve(cacheRoot, "npm"),
     },

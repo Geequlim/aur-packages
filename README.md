@@ -15,6 +15,55 @@
 
 所有工程脚本均为 Node.js 24 可直接执行的 `.mts` 文件，不需要预编译。
 
+## 检查官网版本
+
+版本快捷指令统一使用 Tiny。只检查官网，不修改文件：
+
+```bash
+tiny run tools/check
+```
+
+把官网最新版本、发布日期、构建 ID 和 Mac arm64 DMG 地址写入工程：
+
+```bash
+tiny run tools/update
+```
+
+版本状态记录在 `configs/releases.json`：
+
+- `latest` 是官网当前公开的最新版本，由 `tools/update` 维护。
+- `supportedVersion` 是已经完成 Linux 适配、默认用于构建的版本。
+
+如果官网出现新版本，`tools/update` 只更新 `latest`，不会让尚未验证的版本破坏
+现有构建。准备好 `configs/versions/<version>.json`、正确的 DMG SHA-256 和
+`templates/patches/<version>.json` 后，再执行：
+
+```bash
+tiny run tools/promote
+```
+
+提升成功后，没有显式传入 `--version` 的构建、运行和打包命令都会使用新的
+`supportedVersion`。命令行 `--version` 和 `DOUYIN_VERSION` 仍可临时覆盖默认值。
+
+### 每夜自动更新
+
+GitHub Actions 在北京时间每天 00:00 检查官网。发现 `latest` 高于当前
+`supportedVersion` 时，流水线会：
+
+1. 下载新 DMG，计算 SHA-256，并从应用声明中读取 Electron 和原生依赖版本。
+2. 从当前适配版本复制补丁模板，由实际构建验证每个补丁锚点是否仍然兼容。
+3. 构建并静态审计可运行目录，然后生成 AppImage 和校验文件。
+4. 创建或更新 `v<version>` GitHub Release。
+5. 发布成功后提升 `supportedVersion`，由 `github-actions[bot]` 提交并推送生成的
+   版本配置和补丁模板。
+
+也可以在 GitHub Actions 页面手动运行 `Nightly Update And Release`。如果新版导致
+补丁、原生依赖或构建流程不兼容，任务会失败且不会提升默认版本。该工作流不会生成、
+提交或发布 AUR 包；AUR 始终只通过 `tiny run publish/arch/aur` 手动发布。
+
+仓库需要允许 GitHub Actions 使用 `contents: write` 创建 Release 和推送版本配置；
+如果默认分支启用了保护规则，也需要允许 `github-actions[bot]` 执行这次自动提交。
+
 ## 模板约定
 
 脚本需要输出静态补丁、启动器、桌面入口或其他文本文件时，文件正文统一放在
@@ -130,7 +179,7 @@ sha256sum -c DouyinDevTools-4.5.3-x86_64.AppImage.sha256
 生成本地 pacman 安装包：
 
 ```bash
-tiny run package/arch
+tiny run publish/arch
 ```
 
 该指令会重新生成 AppImage，再通过 `makepkg` 输出：
@@ -149,7 +198,7 @@ sudo pacman -U \
 发布到 AUR：
 
 ```bash
-tiny run package/arch/aur
+tiny run publish/arch/aur
 ```
 
 发布子指令会执行外部写操作：
@@ -208,9 +257,10 @@ npm run smoke:appimage -- --version 4.5.3
 `build/`，发布产物位于 `dist/`，三者均不提交 Git。重复构建会复用已验证缓存，
 但每次都会重新生成干净的运行目录并重新应用补丁。
 
-版本、DMG 哈希、Electron 版本和原生依赖版本统一记录在
-`configs/versions/<version>.json`；AppImage 工具版本和哈希记录在
-`configs/tooling.json`。版本专用补丁记录在 `templates/patches/<version>.json`。
+官网最新版本和当前默认适配版本记录在 `configs/releases.json`；版本、DMG 哈希、
+Electron 版本和原生依赖版本统一记录在 `configs/versions/<version>.json`；
+AppImage 工具版本和哈希记录在 `configs/tooling.json`。版本专用补丁记录在
+`templates/patches/<version>.json`。
 
 ## 当前兼容策略
 

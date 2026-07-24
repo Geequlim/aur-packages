@@ -8,3 +8,14 @@ publish:
           description: 发布 AppImage 到 GitHub Release 并更新 AUR
           command: node scripts/package-arch.mts publish
 
+tools:
+  actions:
+    - name: check
+      description: 从抖音开放平台官网检查最新开发者工具版本
+      command: node scripts/check-version.mts check
+    - name: update
+      description: 把官网最新版本元数据写入工程配置
+      command: node scripts/check-version.mts update
+    - name: promote
+      description: 配置和补丁就绪后切换默认构建版本
+      command: node scripts/check-version.mts promote
