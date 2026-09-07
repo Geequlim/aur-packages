@@ -1,0 +1,28 @@
+[
+  {
+    "file": "app.content/dist/applications/common/vendors.js",
+    "before": "return e||(e=r.name),t||(t=r.version),{name:e,version:t}",
+    "after": "return e||(e=r.name||\"miniprogram-ide\"),t||(t=r.version||\"{{VERSION}}\"),{name:e,version:t}"
+  },
+  {
+    "file": "app.content/dist/pages/main-helper/index.js",
+    "before": "return e||(e=n.name),t||(t=n.version),{name:e,version:t}",
+    "after": "return e||(e=n.name||\"miniprogram-ide\"),t||(t=n.version||\"{{VERSION}}\"),{name:e,version:t}"
+  },
+  {
+    "file": "app.content/dist/applications/extract-miniapp-page/vendors-536eaa00.js",
+    "before": "return e||(e=r.name),t||(t=r.version),{name:e,version:t}",
+    "after": "return e||(e=r.name||\"miniprogram-ide\"),t||(t=r.version||\"{{VERSION}}\"),{name:e,version:t}"
+  },
+  {
+    "file": "app.content/dist/applications/extract-miniapp-page/monitor-service.js",
+    "before": "return e||(e=n.name),t||(t=n.version),{name:e,version:t}",
+    "after": "return e||(e=n.name||\"miniprogram-ide\"),t||(t=n.version||\"{{VERSION}}\"),{name:e,version:t}"
+  },
+  {
+    "file": "app.content/dist/pages/main-helper/index.js",
+    "label": "Linux Toolkit bridge",
+    "before": "const _=require(\"@byted-rspuck/toolkit\");",
+    "after": "const _=process.platform===\"linux\"?require(\"../../../../linux-toolkit-bridge.js\"):require(\"@byted-rspuck/toolkit\");"
+  }
+]
