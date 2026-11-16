@@ -97,9 +97,17 @@ If Layabox replaces the ZIP without changing the version or URL, the normal chec
 4. Commit and push to this repository.
 5. Push `PKGBUILD` and `.SRCINFO` to the AUR repository.
 
-Required repository secret:
+### Credentials
 
-- `AUR_SSH_PRIVATE_KEY`: private SSH key registered with the AUR account that owns `layaair-cli`.
+The workflow uses the same credentials and deployment model as `laya-air-ide`:
+
+- `AUR_SSH_PRIVATE_KEY`: the same private SSH key registered with the AUR account
+- No additional credential types, environment variables, GitHub Environments, or runner settings are required
+- The job uses the same `ubuntu-latest` runner, `archlinux:latest` container, and AUR SSH host configuration
+
+The only per-repository requirement is that the existing `AUR_SSH_PRIVATE_KEY` secret is available to this repository (for example, through an organization secret). No new key needs to be generated.
+
+`AUR_USERNAME` is listed in the `laya-air-ide` README, but neither workflow consumes it: both authenticate to AUR over SSH as the fixed `aur` user. It remains optional and is not required here.
 
 The workflow creates the AUR repository on first push if it does not exist yet.
 

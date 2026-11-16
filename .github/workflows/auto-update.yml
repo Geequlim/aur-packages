@@ -29,28 +29,30 @@ jobs:
         shell: bash
 
     steps:
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           set -euo pipefail
           pacman -Syu --noconfirm --needed \
-            ca-certificates git base-devel jq curl aria2 openssh util-linux shadow libarchive
+            ca-certificates git base-devel jq curl aria2 openssh util-linux
           update-ca-trust || true
           git --version
           jq --version
-          curl --version | head -n1
+          curl --version
           aria2c --version | head -n1
-          bsdtar --version
+          ssh -V || true
 
-      - name: Prepare builder user and repository directory
+      - name: Prepare builder user and repo dir
         run: |
           set -euo pipefail
           id -u builder >/dev/null 2>&1 || useradd -m builder
           rm -rf /repo
           mkdir -p /repo
           chown -R builder:builder /repo
+
+          # ensure cache dir exists and is writable
           install -d -m 700 -o builder -g builder /home/builder/.cache/layaair-cli
 
-      - name: Clone repository
+      - name: Clone repo (clean, real .git)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REF_NAME: ${{ github.ref_name }}
@@ -116,7 +118,7 @@ jobs:
             FORCE='${FORCE}' CACHE_DIR='${CACHE_DIR}' ./scripts/update.sh
           "
 
-      - name: Detect changes
+      - name: Detect Changes
         id: diff
         run: |
           set -euo pipefail
@@ -128,7 +130,7 @@ jobs:
           ')"
           echo "changed=${changed}" >> "$GITHUB_OUTPUT"
 
-      - name: Commit and push
+      - name: Commit And Push
         if: steps.diff.outputs.changed == 'true'
         run: |
           set -euo pipefail
@@ -151,7 +153,7 @@ jobs:
             git push origin HEAD
           "
 
-      - name: Push to AUR
+      - name: Push To AUR
         if: steps.diff.outputs.changed == 'true'
         env:
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
@@ -164,6 +166,7 @@ jobs:
             exit 1
           fi
 
+          # Install SSH key for builder
           install -d -m 700 -o builder -g builder /home/builder/.ssh
 
           tmpkey="$(mktemp)"
@@ -172,6 +175,7 @@ jobs:
           install -m 600 -o builder -g builder "$tmpkey" /home/builder/.ssh/id_ed25519
           rm -f "$tmpkey"
 
+          # IMPORTANT: push to AUR from a clean AUR repo clone, not from GitHub repo
           runuser -u builder -- bash -lc "
             set -euo pipefail
 
@@ -187,10 +191,12 @@ jobs:
               > ~/.ssh/config
             chmod 600 ~/.ssh/config
 
+            # sanity: packaging files must exist in /repo
             cd /repo
             test -f PKGBUILD
             test -f .SRCINFO
 
+            # clone the AUR repo into a separate dir; bootstrap it on first push
             rm -rf /home/builder/aur-repo
             if ! git clone \"ssh://aur@aur.archlinux.org/${AUR_PKGNAME}.git\" /home/builder/aur-repo; then
               echo 'AUR repository does not exist yet; creating it on first push.'
@@ -201,10 +207,18 @@ jobs:
             fi
 
             cd /home/builder/aur-repo
+
+            # replace contents with packaging files only (AUR hook expects PKGBUILD at root)
             find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
 
             cp -f /repo/PKGBUILD .
             cp -f /repo/.SRCINFO .
+            if [[ -f /repo/${AUR_PKGNAME}.install ]]; then
+              cp -f /repo/${AUR_PKGNAME}.install .
+            fi
+
+            # verify PKGBUILD is really present before commit
+            test -f PKGBUILD
 
             git add -A
             if git diff --cached --quiet; then
