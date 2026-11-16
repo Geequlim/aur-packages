@@ -1,4 +1,4 @@
-_FORCE_ts=20261116151612
+_FORCE_ts=20261116152344
 # Maintainer: Geequlim
 #
 # The LayaAir CLI runtime is published by Layabox as a versioned ZIP on their
@@ -9,7 +9,7 @@ _FORCE_ts=20261116151612
 
 pkgname=layaair-cli
 pkgver=3.4.3
-pkgrel=2
+pkgrel=3
 _upstream_ver=3.4.3
 _url=https://ldc-1251285021.file.myqcloud.com/layaair3/layaair-3.4/cli/layaair-cli-3.4.3-linux-x64.zip
 pkgdesc='LayaAir command-line tool (official runtime)'
