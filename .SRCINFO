@@ -1,7 +1,7 @@
 pkgbase = t3-code-cli-bin
 	pkgdesc = Self-contained T3 Code server and command-line interface
 	pkgver = 0.1.10
-	pkgrel = 1
+	pkgrel = 2
 	url = https://github.com/pingdotgg/t3code
 	arch = x86_64
 	arch = aarch64

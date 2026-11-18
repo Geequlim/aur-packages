@@ -1,7 +1,7 @@
 # Maintainer: Geequlim
 pkgname=t3-code-cli-bin
 pkgver=0.1.10
-pkgrel=1
+pkgrel=2
 pkgdesc='Self-contained T3 Code server and command-line interface'
 arch=('x86_64' 'aarch64')
 url='https://github.com/pingdotgg/t3code'
