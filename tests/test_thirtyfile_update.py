@@ -142,6 +142,7 @@ if os.environ.get('ATTEST_FAIL')=='true':
         (self.assets / "thirtyfile-1.1.0-linux-amd64").write_bytes(b"Corrupted bytes")
         result = self.run_update()
         self.assertNotEqual(result.returncode, 0)
+        self.assertIn("did NOT match", result.stderr)
         self.assertEqual(self.snapshot(), before)
 
     def test_prerelease_is_not_accepted(self):
@@ -150,6 +151,7 @@ if os.environ.get('ATTEST_FAIL')=='true':
         self.save_release()
         result = self.run_update()
         self.assertNotEqual(result.returncode, 0)
+        self.assertIn("draft or prerelease", result.stderr)
         self.assertEqual(self.snapshot(), before)
 
     def test_same_version_replacement_requires_force_and_bumps_release(self):

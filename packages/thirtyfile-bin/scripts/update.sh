@@ -11,6 +11,9 @@ elif [[ $# -ne 0 ]]; then
   exit 2
 fi
 [[ "$force" == true || "$force" == false ]] || { echo 'FORCE must be true or false' >&2; exit 2; }
+for tool in curl jq vercmp; do
+  command -v "$tool" >/dev/null || { echo "Missing required tool: $tool" >&2; exit 1; }
+done
 
 upstream=ThirtyFile/ThirtyFile
 api_args=(-fsSL --retry 3 --connect-timeout 20 --max-time 60 -H 'Accept: application/vnd.github+json')
@@ -18,7 +21,10 @@ if [[ -n ${GITHUB_TOKEN:-} ]]; then
   api_args+=(-H "Authorization: Bearer $GITHUB_TOKEN")
 fi
 release=$(curl "${api_args[@]}" "https://api.github.com/repos/$upstream/releases/latest")
-jq -e '.draft == false and .prerelease == false' <<< "$release" >/dev/null
+if ! jq -e '.draft == false and .prerelease == false' <<< "$release" >/dev/null; then
+  echo 'The upstream release is a draft or prerelease.' >&2
+  exit 1
+fi
 tag=$(jq -er '.tag_name' <<< "$release")
 [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Unexpected stable release tag: $tag" >&2; exit 1; }
 latest=${tag#v}

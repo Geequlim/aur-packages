@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Install validation tools
         run: |
-          pacman -Syu --noconfirm --needed base-devel git python shellcheck
+          pacman -Syu --noconfirm --needed base-devel git python shellcheck jq
           useradd -m builder
       - uses: actions/checkout@v7
       - name: Validate metadata and maintenance scripts
