@@ -1,5 +1,7 @@
 # cosbrowser-bin
 
+> Maintenance has moved to [Geequlim/aur-packages](https://github.com/Geequlim/aur-packages/tree/main/packages/cosbrowser-bin). Please use the new repository for updates and issues. This repository retains historical code and releases; scheduled updates now run in the new repository.
+
 Repackage the official Tencent Cloud **COSBrowser** client into an Arch Linux
 package and publish to AUR.
 
