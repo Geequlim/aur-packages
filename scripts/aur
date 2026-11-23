@@ -15,7 +15,7 @@ verify   Compare .SRCINFO with PKGBUILD; typecheck the Douyin port.
 build    Build a local Arch package (and the Douyin port when selected).
 publish  Synchronize AUR; Douyin also publishes its prepared AppImage release.
 
-Use FORCE=true to refresh an unchanged upstream release for the four repacks.
+Use FORCE=true to refresh an unchanged upstream release for a repack.
 Install Douyin dependencies with npm ci --ignore-scripts in its package directory.
 EOF
 }

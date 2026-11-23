@@ -25,13 +25,46 @@ jobs:
           # Expand package paths in the builder shell.
           # shellcheck disable=SC2016
           runuser -u builder -- bash -euo pipefail -c '
-            shellcheck scripts/aur scripts/publish.sh scripts/maintain.sh
+            shellcheck scripts/aur scripts/publish.sh scripts/maintain.sh packages/thirtyfile-bin/scripts/update.sh
             for pkgbuild in packages/*/PKGBUILD; do
               directory=${pkgbuild%/PKGBUILD}
               ./scripts/aur verify "${directory##*/}"
             done
             python3 -m unittest discover -s tests -v
           '
+  thirtyfile:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    permissions:
+      contents: read
+      attestations: read
+    steps:
+      - name: Install build and runtime tools
+        run: |
+          pacman -Syu --noconfirm --needed base-devel git ca-certificates tzdata systemd python github-cli
+          useradd -m builder
+      - uses: actions/checkout@v7
+      - name: Build the binary package
+        shell: bash
+        run: |
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          runuser -u builder -- ./scripts/aur build thirtyfile-bin
+      - name: Verify upstream build provenance
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          version=$(sed -n 's/^pkgver=//p' packages/thirtyfile-bin/PKGBUILD)
+          gh attestation verify "packages/thirtyfile-bin/thirtyfile-${version}-linux-amd64" \
+            --repo ThirtyFile/ThirtyFile \
+            --signer-workflow ThirtyFile/ThirtyFile/.github/workflows/release.yml
+      - name: Install and check the service integration
+        shell: bash
+        run: |
+          pacman -U --noconfirm packages/thirtyfile-bin/thirtyfile-bin-*-x86_64.pkg.tar.zst
+          getent passwd thirtyfile
+          systemd-analyze verify /usr/lib/systemd/system/thirtyfile.service
+          runuser -u thirtyfile -- python3 tests/smoke_thirtyfile.py /usr/bin/thirtyfile
   douyin:
     runs-on: ubuntu-latest
     defaults:

@@ -9,7 +9,7 @@ on:
         description: Package to update
         type: choice
         default: all
-        options: [all, layaair-ide, layaair-cli, cosbrowser-bin, t3-code-cli-bin]
+        options: [all, layaair-ide, layaair-cli, cosbrowser-bin, t3-code-cli-bin, thirtyfile-bin]
       force:
         description: Redownload and refresh the current upstream release
         type: boolean
@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  attestations: read
 
 concurrency:
   group: aur-maintenance
@@ -36,7 +37,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          pacman -Syu --noconfirm --needed base-devel ca-certificates git jq curl aria2 openssh util-linux libarchive
+          pacman -Syu --noconfirm --needed base-devel ca-certificates git jq curl aria2 openssh util-linux libarchive github-cli
           useradd -m builder
       - uses: actions/checkout@v7
         with:

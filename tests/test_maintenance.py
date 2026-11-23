@@ -114,6 +114,27 @@ if [[ "$1" == --printsrcinfo ]]; then cat .SRCINFO; fi
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Commit the changes", result.stderr)
 
+    def test_first_publication_includes_thirtyfile_service_files(self):
+        package = self.add_package("thirtyfile-bin", "1.1.0")
+        helpers = ["thirtyfile.service", "thirtyfile.conf", "thirtyfile.sysusers"]
+        for name in helpers:
+            shutil.copyfile(SOURCE / "packages/thirtyfile-bin" / name, package / name)
+        self.commit(self.root)
+        remote = self.base / "thirtyfile.git"
+        self.run_git(self.base, "init", "--bare", "-q", "-b", "master", str(remote))
+        self.run_git(
+            self.base, "config", "--global", f"url.{remote}.insteadOf",
+            "ssh://aur@aur.archlinux.org/thirtyfile-bin.git",
+        )
+        result = self.run_script("scripts/aur", "publish", "thirtyfile-bin")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(
+            self.run_git(remote, "ls-tree", "--name-only", "master").stdout.splitlines(),
+            [".SRCINFO", "PKGBUILD", "thirtyfile.conf", "thirtyfile.service", "thirtyfile.sysusers"],
+        )
+        for name in helpers:
+            self.assertEqual(self.run_git(remote, "show", f"master:{name}").stdout, (package / name).read_text())
+
     def test_unchanged_package_still_checks_push_permission(self):
         initial = self.run_script("scripts/aur", "publish", "t3-code-cli-bin")
         self.assertEqual(initial.returncode, 0, initial.stdout + initial.stderr)

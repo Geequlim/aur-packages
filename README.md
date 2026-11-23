@@ -8,6 +8,7 @@
 | [layaair-cli](packages/layaair-cli) | LayaAir 官方 CLI ZIP 重打包 |
 | [cosbrowser-bin](packages/cosbrowser-bin) | 腾讯云 COSBrowser 重打包 |
 | [t3-code-cli-bin](packages/t3-code-cli-bin) | T3 Code 官方二进制重打包，支持 x86_64 / aarch64 |
+| [thirtyfile-bin](packages/thirtyfile-bin) | ThirtyFile 官方静态二进制与 systemd 服务，支持 x86_64 / aarch64 |
 | [douyin-devtools-bin](packages/douyin-devtools-bin) | 抖音开发者工具 Linux 适配、AppImage 与 AUR 打包 |
 
 各原仓库的提交历史通过 Git subtree 合并保留。已有独立软件项目（例如 Agent Glow、VoxSpell、Quota Glance）的 AUR 功能由各自项目维护。
@@ -35,13 +36,13 @@ git commit -m 'chore(layaair-ide): update packaging'
 ./scripts/aur publish layaair-ide
 ```
 
-四个重打包工程需要 Arch Linux 的 `base-devel`、`git`、`jq`、`curl`、`aria2`、`openssh` 和 `libarchive`。`makepkg` 使用普通用户运行。
+重打包工程需要 Arch Linux 的 `base-devel`、`git`、`jq`、`curl`、`aria2`、`openssh` 和 `libarchive`。ThirtyFile 的上游构建证明验证另外使用 `github-cli`。`makepkg` 使用普通用户运行。
 
 上游在相同版本号下替换文件时，使用 `FORCE=true ./scripts/aur update <包名>` 重新下载并刷新修订号。各包专有的参数与缓存选项见对应目录的 README。
 
 ## 自动更新与 AUR 同步
 
-[Update AUR repacks](.github/workflows/auto-update.yml) 每天 02:37 UTC 维护四个直接重打包的包，也支持手动选择单包和强制刷新。
+[Update AUR repacks](.github/workflows/auto-update.yml) 每天 02:37 UTC 维护五个直接重打包的包，也支持手动选择单包和强制刷新。
 
 - 按包依次更新、校验、提交和推送，避免并发修改同一分支。
 - 某个包失败时继续处理其他包，最终以失败状态报告需要处理的项目。
@@ -72,7 +73,7 @@ cd ../..
 
 ## 验证
 
-安装抖音脚本依赖后运行 `./scripts/aur verify all`，同时检查四个包的 `.SRCINFO` 和抖音脚本类型。公共维护流程的回归测试使用临时本地 Git 仓库，不访问 AUR：
+安装抖音脚本依赖后运行 `./scripts/aur verify all`，同时检查五个包的 `.SRCINFO` 和抖音脚本类型。公共维护流程的回归测试使用临时本地 Git 仓库，不访问 AUR：
 
 ```bash
 python3 -m unittest discover -s tests -v

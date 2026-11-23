@@ -4,7 +4,7 @@ set -euo pipefail
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 name=${1:?Usage: ./scripts/publish.sh package}
 case "$name" in
-  layaair-ide|layaair-cli|cosbrowser-bin|t3-code-cli-bin) ;;
+  layaair-ide|layaair-cli|cosbrowser-bin|t3-code-cli-bin|thirtyfile-bin) ;;
   *) echo "Unsupported repack: $name" >&2; exit 2 ;;
 esac
 directory="$root/packages/$name"
@@ -23,6 +23,9 @@ files=(PKGBUILD .SRCINFO)
 for file in "$directory"/*.install; do
   [[ ! -f "$file" ]] || files+=("${file##*/}")
 done
+if [[ "$name" == thirtyfile-bin ]]; then
+  files+=(thirtyfile.service thirtyfile.conf thirtyfile.sysusers)
+fi
 for file in "${files[@]}"; do
   cp "$directory/$file" "$repository/$file"
 done
