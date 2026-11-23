@@ -1,5 +1,7 @@
 # layaair-cli
 
+> Maintenance has moved to [Geequlim/aur-packages](https://github.com/Geequlim/aur-packages/tree/main/packages/layaair-cli). Please use the new repository for updates and issues. This repository retains historical code and releases; scheduled updates now run in the new repository.
+
 Arch Linux package for the official [LayaAir CLI](https://github.com/layabox/layaair-cli) runtime, published to the AUR as `layaair-cli`.
 
 The package repacks the versioned runtime ZIP from Layabox's CDN. It does not build or patch the runtime itself, so the installed `layaair` command behaves like the official runtime for project creation, builds, validation, preview, and scripts.
