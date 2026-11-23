@@ -1,5 +1,7 @@
 # t3-code-cli-bin
 
+> Maintenance has moved to [Geequlim/aur-packages](https://github.com/Geequlim/aur-packages/tree/main/packages/t3-code-cli-bin). Please use the new repository for updates and issues. This repository retains historical code and releases; scheduled updates now run in the new repository.
+
 Arch Linux AUR package for the standalone [T3 Code](https://github.com/pingdotgg/t3code) CLI and web server. It installs the upstream release under `/opt/t3-code-cli-bin` and exposes the `t3` command. Both x86_64 and aarch64 are supported.
 
 ```sh
