@@ -39,6 +39,8 @@ jobs:
           pacman -Syu --noconfirm --needed base-devel ca-certificates git jq curl aria2 openssh util-linux libarchive
           useradd -m builder
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
       - name: Set up builder and AUR access
         env:
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
