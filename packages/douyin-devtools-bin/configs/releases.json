@@ -1,0 +1,11 @@
+{
+  "sourcePage": "https://developer.open-douyin.com/docs/resource/zh-CN/mini-game/develop/dev-tools/developer-instrument-update-and-download",
+  "platform": "darwin-arm64",
+  "supportedVersion": "4.5.6",
+  "latest": {
+    "version": "4.5.6",
+    "releaseDate": "2026-09-07",
+    "buildId": "478346290",
+    "dmgUrl": "https://sf1-cdn-tos.douyinstatic.com/obj/microapp/frontend/ide/package/obj/developer/ide/478346290/darwin-arm64/%E6%8A%96%E9%9F%B3%E5%BC%80%E5%8F%91%E8%80%85%E5%B7%A5%E5%85%B7-4.5.6-arm64.dmg"
+  }
+}

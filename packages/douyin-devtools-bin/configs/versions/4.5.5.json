@@ -1,0 +1,19 @@
+{
+  "version": "4.5.5",
+  "releaseDate": "2026-07-24",
+  "buildId": "433599866",
+  "platform": "darwin-arm64",
+  "dmgUrl": "https://sf1-cdn-tos.douyinstatic.com/obj/microapp/frontend/ide/package/obj/developer/ide/433599866/darwin-arm64/抖音开发者工具-4.5.5-arm64.dmg",
+  "dmgSha256": "36d742df4f7a871c73495b5e0ccbebfd98e23e69bbaff789a728faf2057ffe3d",
+  "electronVersion": "36.4.0",
+  "electronMirror": "https://npmmirror.com/mirrors/electron/",
+  "nativeDependencies": {
+    "@vscode/spdlog": "0.15.2",
+    "@vscode/sqlite3": "5.1.8-vscode",
+    "native-keymap": "3.3.5",
+    "@parcel/watcher-linux-x64-glibc": "2.5.1",
+    "@vscode/ripgrep": "1.15.14",
+    "@rspack/binding-linux-x64-gnu": "1.3.0",
+    "@node-rs/xxhash-linux-x64-gnu": "1.7.6"
+  }
+}

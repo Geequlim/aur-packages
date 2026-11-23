@@ -1,0 +1,32 @@
+{
+  "name": "douyin-game-devtools-linux",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "allowScripts": {
+    "@vscode/ripgrep": true,
+    "@vscode/spdlog": true,
+    "@vscode/sqlite3": true,
+    "electron": true,
+    "native-keymap": true
+  },
+  "scripts": {
+    "build": "node scripts/build.mts",
+    "download": "node scripts/download.mts",
+    "extract": "node scripts/extract.mts",
+    "prepare": "node scripts/prepare.mts",
+    "audit": "node scripts/audit.mts",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node scripts/smoke.mts",
+    "smoke:appimage": "node scripts/smoke-appimage.mts",
+    "appimage": "node scripts/appimage.mts",
+    "start": "node scripts/run.mts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "typescript": "^7.0.2"
+  }
+}

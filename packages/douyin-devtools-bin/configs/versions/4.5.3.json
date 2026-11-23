@@ -1,0 +1,19 @@
+{
+  "version": "4.5.3",
+  "releaseDate": "2026-05-18",
+  "buildId": "369514553",
+  "platform": "darwin-arm64",
+  "dmgUrl": "https://sf1-cdn-tos.douyinstatic.com/obj/microapp/frontend/ide/package/obj/developer/ide/369514553/darwin-arm64/%E6%8A%96%E9%9F%B3%E5%BC%80%E5%8F%91%E8%80%85%E5%B7%A5%E5%85%B7-4.5.3-arm64.dmg",
+  "dmgSha256": "d7cc2a6580c3c4c7eb6e583a067e6606c5eb397b797bf58fa3f1199b122ead03",
+  "electronVersion": "36.4.0",
+  "electronMirror": "https://npmmirror.com/mirrors/electron/",
+  "nativeDependencies": {
+    "@vscode/spdlog": "0.15.2",
+    "@vscode/sqlite3": "5.1.8-vscode",
+    "native-keymap": "3.3.5",
+    "@parcel/watcher-linux-x64-glibc": "2.5.1",
+    "@vscode/ripgrep": "1.15.14",
+    "@rspack/binding-linux-x64-gnu": "1.3.0",
+    "@node-rs/xxhash-linux-x64-gnu": "1.7.6"
+  }
+}
