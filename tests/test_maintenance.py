@@ -114,6 +114,21 @@ if [[ "$1" == --printsrcinfo ]]; then cat .SRCINFO; fi
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Commit the changes", result.stderr)
 
+    def test_unchanged_package_still_checks_push_permission(self):
+        initial = self.run_script("scripts/aur", "publish", "t3-code-cli-bin")
+        self.assertEqual(initial.returncode, 0, initial.stdout + initial.stderr)
+        real_git = shutil.which("git")
+        self.write_executable(self.bin / "git", f"""#!/usr/bin/env bash
+if [[ " $* " == *' push --dry-run '* ]]; then
+  echo 'Push permission denied' >&2
+  exit 23
+fi
+exec '{real_git}' "$@"
+""")
+        result = self.run_script("scripts/aur", "publish", "t3-code-cli-bin")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Push permission denied", result.stderr)
+
     def test_one_failed_package_does_not_skip_the_rest(self):
         earlier = self.add_package("layaair-ide", "3.4.3")
         self.write_executable(earlier / "scripts/update.sh", "#!/bin/sh\nexit 7\n")

@@ -28,6 +28,8 @@ for file in "${files[@]}"; do
 done
 git -C "$repository" add -- "${files[@]}"
 if git -C "$repository" diff --cached --quiet; then
+  # Exercise the receive-pack permission check even when there is no update.
+  git -C "$repository" push --dry-run origin HEAD:master
   echo "$name: AUR is already up to date."
   exit 0
 fi
