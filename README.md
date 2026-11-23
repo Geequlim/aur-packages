@@ -1,5 +1,7 @@
 # 抖音小游戏开发者工具 Linux 构建工程
 
+> 维护已迁移至 [Geequlim/aur-packages](https://github.com/Geequlim/aur-packages/tree/main/packages/douyin-devtools-bin)。后续代码、问题反馈和自动更新请前往新仓库；本仓库保留历史代码与旧版 Release。
+
 从抖音官方 macOS arm64 DMG 提取业务应用，替换 Linux x86-64 原生依赖，
 生成可在本机直接启动的 Electron 应用目录，并进一步打包为 AppImage。
 
