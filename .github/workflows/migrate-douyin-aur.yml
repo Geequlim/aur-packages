@@ -1,0 +1,42 @@
+name: Migrate existing Douyin AUR references
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aur-maintenance
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm --needed base-devel ca-certificates git curl jq openssh python
+          useradd -m builder
+      - uses: actions/checkout@v7
+      - name: Configure AUR access
+        env:
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$AUR_SSH_PRIVATE_KEY"
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          install -d -m 700 -o builder -g builder /home/builder/.ssh
+          umask 077
+          printf '%s\n' "$AUR_SSH_PRIVATE_KEY" > /home/builder/.ssh/aur
+          cp .github/aur_known_hosts /home/builder/.ssh/known_hosts
+          chown builder:builder /home/builder/.ssh/{aur,known_hosts}
+      - name: Verify relocated assets and update AUR
+        env:
+          GIT_SSH_COMMAND: ssh -i /home/builder/.ssh/aur -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/home/builder/.ssh/known_hosts
+        run: runuser -u builder --preserve-environment -- ./scripts/migrate-douyin-aur.sh

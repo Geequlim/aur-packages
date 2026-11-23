@@ -12,7 +12,7 @@ _url=https://ldc-1251285021.file.myqcloud.com/layaair3/layaair-3.4/linux/LayaAir
 pkgrel=1
 pkgdesc='LayaAir IDE (repacked from official AppImage)'
 arch=('x86_64')
-url='https://layaair.com/'
+url='https://github.com/Geequlim/aur-packages/tree/main/packages/layaair-ide'
 license=('custom')
 install="${pkgname}.install"
 # Keep pkgver and pkgrel in the local filename: makepkg skips downloading

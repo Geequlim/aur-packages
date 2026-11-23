@@ -14,7 +14,7 @@ _upstream_ver=3.4.3
 _url=https://ldc-1251285021.file.myqcloud.com/layaair3/layaair-3.4/cli/layaair-cli-3.4.3-linux-x64.zip
 pkgdesc='LayaAir command-line tool (official runtime)'
 arch=('x86_64')
-url='https://github.com/layabox/layaair-cli'
+url='https://github.com/Geequlim/aur-packages/tree/main/packages/layaair-cli'
 license=('custom')
 depends=('nodejs>=22.12.0')
 options=('!strip')

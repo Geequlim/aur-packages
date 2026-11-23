@@ -3,7 +3,7 @@ pkgver={{VERSION}}
 pkgrel=1
 pkgdesc='Douyin mini game and mini app developer tools repackaged for Linux'
 arch=('x86_64')
-url='https://github.com/{{GITHUB_REPOSITORY}}'
+url='https://github.com/{{GITHUB_REPOSITORY}}/tree/main/packages/{{PACKAGE_NAME}}'
 license=('custom')
 depends=(
   'alsa-lib'

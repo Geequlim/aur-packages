@@ -2,7 +2,7 @@ pkgbase = layaair-cli
 	pkgdesc = LayaAir command-line tool (official runtime)
 	pkgver = 3.4.3
 	pkgrel = 3
-	url = https://github.com/layabox/layaair-cli
+	url = https://github.com/Geequlim/aur-packages/tree/main/packages/layaair-cli
 	arch = x86_64
 	license = custom
 	depends = nodejs>=22.12.0

@@ -2,13 +2,13 @@
 
 集中维护为第三方软件提供的 Arch Linux 打包和 Linux 适配工程。
 
-| 目录 | 软件来源与维护内容 | 原维护仓库 |
-| --- | --- | --- |
-| `packages/layaair-ide` | LayaAir 官方 AppImage 重打包 | [layaair-ide](https://github.com/Geequlim/layaair-ide) |
-| `packages/layaair-cli` | LayaAir 官方 CLI ZIP 重打包 | [layaair-cli](https://github.com/Geequlim/layaair-cli) |
-| `packages/cosbrowser-bin` | 腾讯云 COSBrowser 重打包 | [cosbrowser](https://github.com/Geequlim/cosbrowser) |
-| `packages/t3-code-cli-bin` | T3 Code 官方二进制重打包，支持 x86_64 / aarch64 | [t3-code-cli-bin](https://github.com/Geequlim/t3-code-cli-bin) |
-| `packages/douyin-devtools-bin` | 抖音开发者工具 Linux 适配、AppImage 与 AUR 打包 | [douyin-minigame-devtools-linux](https://github.com/Geequlim/douyin-minigame-devtools-linux) |
+| 维护目录 | 软件来源与维护内容 |
+| --- | --- |
+| [layaair-ide](packages/layaair-ide) | LayaAir 官方 AppImage 重打包 |
+| [layaair-cli](packages/layaair-cli) | LayaAir 官方 CLI ZIP 重打包 |
+| [cosbrowser-bin](packages/cosbrowser-bin) | 腾讯云 COSBrowser 重打包 |
+| [t3-code-cli-bin](packages/t3-code-cli-bin) | T3 Code 官方二进制重打包，支持 x86_64 / aarch64 |
+| [douyin-devtools-bin](packages/douyin-devtools-bin) | 抖音开发者工具 Linux 适配、AppImage 与 AUR 打包 |
 
 各原仓库的提交历史通过 Git subtree 合并保留。已有独立软件项目（例如 Agent Glow、VoxSpell、Quota Glance）的 AUR 功能由各自项目维护。
 
@@ -68,7 +68,7 @@ cd ../..
 
 `update` 只记录待适配的上游版本，不自动切换已适配版本。迁移后的 [Douyin nightly release](.github/workflows/douyin-release.yml) 继续在构建和审计通过后发布 AppImage、提升默认版本，不自动发布 AUR。
 
-新产物发布到本仓库，tag 使用 `douyin-devtools-v<版本>`，与其他包的版本区分。旧版本仍从原仓库的 Release 下载。准备好本地 AppImage 后，`./scripts/aur publish douyin-devtools-bin` 会发布 Release、生成打包文件、验证源文件并同步 AUR，与原手动发布流程一致。
+全部产物发布到本仓库，tag 使用 `douyin-devtools-v<版本>`，与其他包的版本区分。历史版本 4.5.3、4.5.5、4.5.6 的 Release 和校验文件也已迁入。准备好本地 AppImage 后，`./scripts/aur publish douyin-devtools-bin` 会发布 Release、生成打包文件、验证源文件并同步 AUR，与原手动发布流程一致。
 
 ## 验证
 
