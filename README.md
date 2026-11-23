@@ -1,5 +1,7 @@
 # layaair-ide
 
+> Maintenance has moved to [Geequlim/aur-packages](https://github.com/Geequlim/aur-packages/tree/main/packages/layaair-ide). Please use the new repository for updates and issues. This repository retains historical code and releases; scheduled updates now run in the new repository.
+
 Repackage the official LayaAir IDE AppImage into an Arch Linux package and publish to AUR.
 
 ## How it works
