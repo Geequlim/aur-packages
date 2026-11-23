@@ -1,5 +1,7 @@
 # 抖音小游戏开发者工具 Linux 构建工程
 
+本工程位于统一维护仓库的 `packages/douyin-devtools-bin`，以下命令均在该目录执行。统一入口见[仓库维护说明](../../README.md)。
+
 从抖音官方 macOS arm64 DMG 提取业务应用，替换 Linux x86-64 原生依赖，
 生成可在本机直接启动的 Electron 应用目录，并进一步打包为 AppImage。
 
@@ -47,17 +49,17 @@ tiny run tools/promote
 
 ### 每夜自动更新
 
-GitHub Actions 在北京时间每天 00:00 检查官网。发现 `latest` 高于当前
+GitHub Actions 在北京时间每天 00:17 检查官网。发现 `latest` 高于当前
 `supportedVersion` 时，流水线会：
 
 1. 下载新 DMG，计算 SHA-256，并从应用声明中读取 Electron 和原生依赖版本。
 2. 从当前适配版本复制补丁模板，由实际构建验证每个补丁锚点是否仍然兼容。
 3. 构建并静态审计可运行目录，然后生成 AppImage 和校验文件。
-4. 创建或更新 `v<version>` GitHub Release。
+4. 创建或更新 `douyin-devtools-v<version>` GitHub Release。
 5. 发布成功后提升 `supportedVersion`，由 `github-actions[bot]` 提交并推送生成的
    版本配置和补丁模板。
 
-也可以在 GitHub Actions 页面手动运行 `Nightly Update And Release`。如果新版导致
+也可以在 GitHub Actions 页面手动运行 `Douyin nightly release`。如果新版导致
 补丁、原生依赖或构建流程不兼容，任务会失败且不会提升默认版本。该工作流不会生成、
 提交或发布 AUR 包；AUR 始终只通过 `tiny run publish/arch/aur` 手动发布。
 
@@ -203,7 +205,7 @@ tiny run publish/arch/aur
 
 发布子指令会执行外部写操作：
 
-1. 创建或更新 GitHub Release `v<开发者工具版本>`，上传 AppImage 和校验文件。
+1. 创建或更新 GitHub Release `douyin-devtools-v<开发者工具版本>`，上传 AppImage 和校验文件。
 2. 生成面向 GitHub Release 的 `PKGBUILD` 与 `.SRCINFO`。
 3. 使用 SSH 克隆并更新 `douyin-devtools-bin` AUR 仓库。
 4. 验证远端源文件后提交并推送到 AUR。

@@ -1,21 +1,25 @@
-name: Nightly Update And Release
+name: Douyin nightly release
 
 on:
   schedule:
-    # GitHub cron 使用 UTC；北京时间每天 00:00。
-    - cron: "0 16 * * *"
+    # GitHub cron 使用 UTC；北京时间每天 00:17。
+    - cron: "17 16 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: nightly-update-release
+  group: aur-maintenance
   cancel-in-progress: false
 
 jobs:
   update:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/douyin-devtools-bin
     timeout-minutes: 180
     env:
       LANG: C.UTF-8
@@ -32,6 +36,7 @@ jobs:
         with:
           node-version: "24"
           cache: npm
+          cache-dependency-path: packages/douyin-devtools-bin/package-lock.json
 
       - name: Check upstream version
         id: version
@@ -57,19 +62,19 @@ jobs:
 
       - name: Install Node.js dependencies
         if: steps.version.outputs.update_available == 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Restore build cache
         if: steps.version.outputs.update_available == 'true'
         uses: actions/cache@v5
         with:
           path: |
-            .cache/downloads
-            .cache/electron
-            .cache/native
-            .cache/npm
-            .cache/tools
-          key: douyin-devtools-${{ runner.os }}-${{ steps.version.outputs.latest_version }}-${{ hashFiles('package-lock.json') }}
+            packages/douyin-devtools-bin/.cache/downloads
+            packages/douyin-devtools-bin/.cache/electron
+            packages/douyin-devtools-bin/.cache/native
+            packages/douyin-devtools-bin/.cache/npm
+            packages/douyin-devtools-bin/.cache/tools
+          key: douyin-devtools-${{ runner.os }}-${{ steps.version.outputs.latest_version }}-${{ hashFiles('packages/douyin-devtools-bin/package-lock.json') }}
           restore-keys: |
             douyin-devtools-${{ runner.os }}-
 
@@ -97,7 +102,7 @@ jobs:
         run: |
           appimage="dist/DouyinDevTools-${VERSION}-x86_64.AppImage"
           checksum="${appimage}.sha256"
-          tag="v${VERSION}"
+          tag="$(jq -r '.arch.githubTagPrefix' configs/packaging.json)${VERSION}"
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$appimage" "$checksum" --clobber
           else

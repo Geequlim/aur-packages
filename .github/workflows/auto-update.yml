@@ -1,0 +1,67 @@
+name: Update AUR repacks
+
+on:
+  schedule:
+    - cron: '37 2 * * *'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to update
+        type: choice
+        default: all
+        options: [all, layaair-ide, layaair-cli, cosbrowser-bin, t3-code-cli-bin]
+      force:
+        description: Redownload and refresh the current upstream release
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aur-maintenance
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    steps:
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm --needed base-devel ca-certificates git jq curl aria2 openssh util-linux libarchive
+          useradd -m builder
+      - uses: actions/checkout@v7
+      - name: Set up builder and AUR access
+        env:
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          AUR_PUBLISH_ENABLED: ${{ vars.AUR_PUBLISH_ENABLED || 'false' }}
+        run: |
+          set -euo pipefail
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          runuser -u builder -- git config --global user.name 'github-actions[bot]'
+          runuser -u builder -- git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          if [[ "$AUR_PUBLISH_ENABLED" == true ]]; then
+            test -n "$AUR_SSH_PRIVATE_KEY" || { echo 'Missing AUR_SSH_PRIVATE_KEY' >&2; exit 1; }
+            install -d -m 700 -o builder -g builder /home/builder/.ssh
+            umask 077
+            printf '%s\n' "$AUR_SSH_PRIVATE_KEY" > /home/builder/.ssh/aur
+            cp .github/aur_known_hosts /home/builder/.ssh/known_hosts
+            chown builder:builder /home/builder/.ssh/{aur,known_hosts}
+          fi
+      - name: Update, commit and synchronize each package
+        env:
+          FORCE: ${{ inputs.force || 'false' }}
+          PACKAGE: ${{ inputs.package || 'all' }}
+          GITHUB_TOKEN: ${{ github.token }}
+          AUR_PUBLISH_ENABLED: ${{ vars.AUR_PUBLISH_ENABLED || 'false' }}
+          GIT_SSH_COMMAND: ssh -i /home/builder/.ssh/aur -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/home/builder/.ssh/known_hosts
+        run: |
+          runuser -u builder --preserve-environment -- ./scripts/maintain.sh "$PACKAGE"

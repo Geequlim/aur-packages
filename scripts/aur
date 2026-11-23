@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+command=${1:-help}
+selection=${2:-all}
+
+usage() {
+  cat <<'EOF'
+Usage: ./scripts/aur <list|check|update|verify|build|publish> [package|all]
+
+check    Check upstream versions without changing tracked files.
+update   Refresh packaging; Douyin only records upstream version metadata.
+verify   Compare .SRCINFO with PKGBUILD; typecheck the Douyin port.
+build    Build a local Arch package (and the Douyin port when selected).
+publish  Synchronize AUR; Douyin also publishes its prepared AppImage release.
+
+Use FORCE=true to refresh an unchanged upstream release for the four repacks.
+Install Douyin dependencies with npm ci --ignore-scripts in its package directory.
+EOF
+}
+
+case "$command" in
+  help|-h|--help) usage; exit 0 ;;
+  list|check|update|verify|build|publish) ;;
+  *) usage >&2; exit 2 ;;
+esac
+[[ $# -le 2 ]] || { usage >&2; exit 2; }
+
+packages=()
+for directory in "$root"/packages/*; do
+  name=${directory##*/}
+  if [[ "$selection" == all || "$selection" == "$name" ]]; then
+    packages+=("$name")
+  fi
+done
+[[ ${#packages[@]} -gt 0 ]] || { echo "Unknown package: $selection" >&2; exit 2; }
+
+run_package() (
+  set -e
+  name=$1
+  cd "$root/packages/$name"
+  if [[ "$command" == list ]]; then
+    printf '%s\n' "$name"
+    return
+  fi
+  printf '\n==> %s: %s\n' "$name" "$command"
+  if [[ "$name" == douyin-devtools-bin ]]; then
+    case "$command" in
+      check) node scripts/check-version.mts check ;;
+      update) node scripts/check-version.mts update ;;
+      verify) npm run typecheck ;;
+      build)
+        node scripts/build.mts
+        node scripts/package-arch.mts build
+        ;;
+      publish) node scripts/package-arch.mts publish ;;
+    esac
+    return
+  fi
+  case "$command" in
+    check) ./scripts/update.sh --check-only ;;
+    update) ./scripts/update.sh ;;
+    verify)
+      bash -n PKGBUILD scripts/update.sh
+      generated=$(mktemp)
+      trap 'rm -f "$generated"' EXIT
+      makepkg --printsrcinfo > "$generated"
+      diff -u .SRCINFO "$generated"
+      ;;
+    build) makepkg --cleanbuild --force ;;
+    publish)
+      "$root/scripts/aur" verify "$name"
+      "$root/scripts/publish.sh" "$name"
+      ;;
+  esac
+)
+
+status=0
+set +e
+for name in "${packages[@]}"; do
+  # Keep the operation outside an `if`: bash otherwise disables errexit
+  # inside the function, which could hide an earlier failed build step.
+  run_package "$name"
+  result=$?
+  if [[ "$result" -ne 0 ]]; then
+    echo "Failed: $name ($command)" >&2
+    status=1
+  fi
+done
+exit "$status"

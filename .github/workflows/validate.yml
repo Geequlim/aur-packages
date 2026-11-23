@@ -1,0 +1,48 @@
+name: Validate packaging
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repacks:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install validation tools
+        run: |
+          pacman -Syu --noconfirm --needed base-devel git python shellcheck
+          useradd -m builder
+      - uses: actions/checkout@v7
+      - name: Validate metadata and maintenance scripts
+        shell: bash
+        run: |
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          # Expand package paths in the builder shell.
+          # shellcheck disable=SC2016
+          runuser -u builder -- bash -euo pipefail -c '
+            shellcheck scripts/aur scripts/publish.sh scripts/maintain.sh
+            for pkgbuild in packages/*/PKGBUILD; do
+              directory=${pkgbuild%/PKGBUILD}
+              ./scripts/aur verify "${directory##*/}"
+            done
+            python3 -m unittest discover -s tests -v
+          '
+  douyin:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/douyin-devtools-bin
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: packages/douyin-devtools-bin/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck

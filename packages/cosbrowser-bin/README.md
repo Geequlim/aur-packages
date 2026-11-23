@@ -1,5 +1,7 @@
 # cosbrowser-bin
 
+Run the local commands below from `packages/cosbrowser-bin`.
+
 Repackage the official Tencent Cloud **COSBrowser** client into an Arch Linux
 package and publish to AUR.
 
@@ -55,19 +57,6 @@ Large zip downloads prefer `aria2c` automatically when available. You can
 override the auto-detected parallel connections with `ARIA2_CONNECTIONS`, and
 tune split size with `ARIA2_MIN_SPLIT_SIZE`.
 
-## GitHub Actions (nightly)
+## Automation
 
-The workflow runs every night and pushes updates to GitHub and AUR.
-
-If upstream silently replaces the zip without changing its contents/version,
-run the workflow manually with `force=true` to force a redownload, recompute
-`sha256sums`, and bump `pkgrel` for a new AUR revision.
-
-Required secrets:
-
-- `AUR_SSH_PRIVATE_KEY` (private key with access to `aur.archlinux.org`)
-
-Optional:
-
-- If you change the AUR package name, update `AUR_PKGNAME` in
-  `.github/workflows/auto-update.yml`.
+Updates and AUR publishing are managed by the shared [root workflow](../../.github/workflows/auto-update.yml). See the [maintenance guide](../../README.md) for credentials and commands.

@@ -1,5 +1,7 @@
 # layaair-cli
 
+Run the local commands below from `packages/layaair-cli`.
+
 Arch Linux package for the official [LayaAir CLI](https://github.com/layabox/layaair-cli) runtime, published to the AUR as `layaair-cli`.
 
 The package repacks the versioned runtime ZIP from Layabox's CDN. It does not build or patch the runtime itself, so the installed `layaair` command behaves like the official runtime for project creation, builds, validation, preview, and scripts.
@@ -87,29 +89,9 @@ Useful options and environment variables:
 
 If Layabox replaces the ZIP without changing the version or URL, the normal check sees no change. Run the workflow manually with `force=true` (or run `./scripts/update.sh --force`) to redownload, recompute the checksum, and bump `pkgrel` so AUR users receive the new revision.
 
-## Nightly automation
+## Automation
 
-`.github/workflows/auto-update.yml` runs daily at 02:00 UTC and can also be started manually:
-
-1. Fetch the latest version from upstream.
-2. Download and checksum the runtime ZIP (cached between runs).
-3. Update `PKGBUILD` and regenerate `.SRCINFO`.
-4. Commit and push to this repository.
-5. Push `PKGBUILD` and `.SRCINFO` to the AUR repository.
-
-### Credentials
-
-The workflow uses the same credentials and deployment model as `laya-air-ide`:
-
-- `AUR_SSH_PRIVATE_KEY`: the same private SSH key registered with the AUR account
-- No additional credential types, environment variables, GitHub Environments, or runner settings are required
-- The job uses the same `ubuntu-latest` runner, `archlinux:latest` container, and AUR SSH host configuration
-
-The only per-repository requirement is that the existing `AUR_SSH_PRIVATE_KEY` secret is available to this repository (for example, through an organization secret). No new key needs to be generated.
-
-`AUR_USERNAME` is listed in the `laya-air-ide` README, but neither workflow consumes it: both authenticate to AUR over SSH as the fixed `aur` user. It remains optional and is not required here.
-
-The workflow creates the AUR repository on first push if it does not exist yet.
+Updates and AUR publishing are managed by the shared [root workflow](../../.github/workflows/auto-update.yml). See the [maintenance guide](../../README.md) for credentials and commands.
 
 ## Local build
 
@@ -132,7 +114,6 @@ pacman -Qlp layaair-cli-3.4.3-1-x86_64.pkg.tar.zst | head
 ├── PKGBUILD
 ├── .SRCINFO
 ├── scripts/update.sh
-├── .github/workflows/auto-update.yml
 └── README.md
 ```
 

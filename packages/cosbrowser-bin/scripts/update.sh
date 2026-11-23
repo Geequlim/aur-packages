@@ -359,7 +359,7 @@ fi
 # Persist probe state so the next nightly run can short-circuit on a HEAD.
 # Only write when we actually obtained fresh headers (non-FORCE path); under
 # FORCE we intentionally want the next run to re-probe fully.
-if [[ "$FORCE" != "true" && -n "${probe_etag:-}" && -n "$latest_sha" && -n "$latest_ver" ]]; then
+if [[ "$CHECK_ONLY" != "true" && "$FORCE" != "true" && -n "${probe_etag:-}" && -n "$latest_sha" && -n "$latest_ver" ]]; then
   probe_write "$probe_etag" "${probe_lastmod:-}" "$latest_ver" "$latest_sha"
 fi
 

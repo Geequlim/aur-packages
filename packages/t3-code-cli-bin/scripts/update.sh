@@ -3,8 +3,11 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 force=${FORCE:-false}
-if [[ $# -gt 0 ]]; then
-  echo 'Usage: FORCE=true ./scripts/update.sh' >&2
+check_only=false
+if [[ $# -eq 1 && "$1" == --check-only ]]; then
+  check_only=true
+elif [[ $# -gt 0 ]]; then
+  echo 'Usage: FORCE=true ./scripts/update.sh [--check-only]' >&2
   exit 2
 fi
 if [[ "$force" != true && "$force" != false ]]; then
@@ -31,6 +34,15 @@ comparison=$(vercmp "$latest" "$current")
 if (( comparison < 0 )); then
   echo "Upstream version $latest is older than packaged version $current" >&2
   exit 1
+fi
+if [[ "$check_only" == true ]]; then
+  printf 'current_ver=%s\nlatest_ver=%s\n' "$current" "$latest"
+  if (( comparison > 0 )) || [[ "$force" == true ]]; then
+    echo 'needs_update=true'
+  else
+    echo 'needs_update=false'
+  fi
+  exit 0
 fi
 if (( comparison == 0 )) && [[ "$force" != true ]]; then
   echo "Already at upstream version $latest"

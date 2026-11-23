@@ -26,6 +26,7 @@ interface ArchPackagingConfig {
   packageName: string;
   provides: string;
   githubRepository: string;
+  githubTagPrefix: string;
   aurRepository: string;
 }
 
@@ -129,7 +130,7 @@ async function preparePackageFiles(
   }
   const appImageSource = mode === "local"
     ? appImageName
-    : `${appImageName}::https://github.com/${packageConfig.githubRepository}/releases/download/v${versionConfig.version}/${appImageName}`;
+    : `${appImageName}::https://github.com/${packageConfig.githubRepository}/releases/download/${packageConfig.githubTagPrefix}${versionConfig.version}/${appImageName}`;
   await writeFile(
     resolve(directory, "PKGBUILD"),
     await renderTemplate("arch/PKGBUILD", {
@@ -178,7 +179,7 @@ async function buildArchPackage(): Promise<void> {
 async function publishGitHubRelease(
   generated: GeneratedPackageFiles,
 ): Promise<void> {
-  const tag = `v${generated.version}`;
+  const tag = `${generated.packageConfig.githubTagPrefix}${generated.version}`;
   const checksum = `${generated.appImage}.sha256`;
   const common = ["--repo", generated.packageConfig.githubRepository];
   if (await commandSucceeds("gh", ["release", "view", tag, ...common])) {

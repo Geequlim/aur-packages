@@ -11,8 +11,4 @@ The package downloads the official release archive from GitHub when it is built.
 
 ## Automatic updates
 
-The GitHub Actions workflow checks the latest upstream stable release daily at 02:00 UTC and can also be run manually from the repository's default branch. On a new version it downloads and verifies both architecture archives against GitHub's release SHA-256 digests, updates `PKGBUILD` and `.SRCINFO`, and commits the result to GitHub. Each run also checks AUR and pushes packaging changes if needed, so a failed AUR push is retried on the next run. The manual `force` option rechecks the current release and increments `pkgrel`.
-
-The repository uses the `AUR_SSH_PRIVATE_KEY` Actions secret for an AUR account with permission to maintain `t3-code-cli-bin`. It is configured with the same key as the layaair package. A first run publishes the package; subsequent runs synchronize changes.
-
-The workflow requires access to GitHub's release API and AUR over SSH. AUR publishing has not occurred until the workflow succeeds.
+Managed by the shared [root workflow](../../.github/workflows/auto-update.yml). See the [maintenance guide](../../README.md). Run local package commands from `packages/t3-code-cli-bin`.
