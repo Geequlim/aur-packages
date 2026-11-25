@@ -67,4 +67,5 @@ jobs:
           AUR_PUBLISH_ENABLED: ${{ vars.AUR_PUBLISH_ENABLED || 'false' }}
           GIT_SSH_COMMAND: ssh -i /home/builder/.ssh/aur -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/home/builder/.ssh/known_hosts
         run: |
-          runuser -u builder --preserve-environment -- ./scripts/maintain.sh "$PACKAGE"
+          # Use the builder's HOME so gh can write its Sigstore trust cache.
+          runuser -u builder -- ./scripts/maintain.sh "$PACKAGE"
